@@ -8,7 +8,7 @@ uses
   FileTypeBrowserTypes;
 
 type
-  TFileKeyBrowserForm = class(TForm)
+  TFileTypeBrowserForm = class(TForm)
     ListViewData: TListView;
     EditFileName: TEdit;
     ButtonFileNameBrowse: TButton;
@@ -28,7 +28,7 @@ type
   end;
 
 var
-  FileTypeBrowserForm: TFileKeyBrowserForm;
+  FileTypeBrowserForm: TFileTypeBrowserForm;
 
 implementation
 
@@ -37,9 +37,9 @@ implementation
 uses
   FileTypeBrowserData;
 
-{ TFileKeyBrowserForm }
+{ TFileTypeBrowserForm }
 
-procedure TFileKeyBrowserForm.ButtonFileNameBrowseClick(Sender: TObject);
+procedure TFileTypeBrowserForm.ButtonFileNameBrowseClick(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
   i: Integer;
@@ -83,20 +83,20 @@ begin
   RefreshUI;
 end;
 
-procedure TFileKeyBrowserForm.ComboBoxFileTypesChange(Sender: TObject);
+procedure TFileTypeBrowserForm.ComboBoxFileTypesChange(Sender: TObject);
 begin
   RefreshListView;
 end;
 
-constructor TFileKeyBrowserForm.Create(AOwner: TComponent);
+constructor TFileTypeBrowserForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   fBaseFileName:= '';
-  Caption:= Format(Caption, SFileTitle);
+  Caption:= Format(Caption, [SFileTitle]);
   RefreshUI;
 end;
 
-procedure TFileKeyBrowserForm.RefreshFileTypes;
+procedure TFileTypeBrowserForm.RefreshFileTypes;
 var
   FileType: TFileKey;
   ActiveFileType: TFileKey;
@@ -144,7 +144,7 @@ begin
   end;
 end;
 
-procedure TFileKeyBrowserForm.RefreshListView;
+procedure TFileTypeBrowserForm.RefreshListView;
 var
   Data: TFileKeyBrowserData;
   Column: TListColumn;
@@ -208,7 +208,7 @@ begin
   end;
 end;
 
-procedure TFileKeyBrowserForm.RefreshUI;
+procedure TFileTypeBrowserForm.RefreshUI;
 begin
   ComboBoxFileTypes.Enabled:= fBaseFileName <> '';
   ButtonRefresh.Enabled:= fBaseFileName <> '';
