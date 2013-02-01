@@ -2,18 +2,18 @@ unit FileTypeBrowserTypes;
 
 interface
 
-//uses
-  { Units for any types referred to in FileRttiTypes must be included here. }
+uses
+  PresortTypesX;
 
 const
   { General Constants.
     Optional. (The default values may be used.) }
 
   { File extension used for all files }
-  SFileExtension = 'DAT';
+  SFileExtension = 'MPS';
 
   { Human-readable File Name, used in the Application Title and the Browse dialog }
-  SFileTitle = 'DAT File';
+  SFileTitle = 'Presort File';
 
   { Delimiter between the Base File Name and the Key }
   SFileDelimiter = '_';
@@ -23,7 +23,10 @@ type
     Required. }
   TFileKey = (
     ftNone,
-//  ft<...>
+    ftPCD,
+    ftPCK,
+    ftPPF,
+    ftSCK
   );
 
 const
@@ -31,7 +34,10 @@ const
     Required. }
   FileKeys: array[TFileKey] of String = (
     '',      { ftNone }
-//  '...'    { ft<...> }
+    'PCD',   { ftPCD }
+    'PCK',   { ftPCK }
+    'PPF',   { ftPPF }
+    'SCK'    { ftSCK }
   );
 
   { Fully qualified type names. Used by RTTI.
@@ -40,7 +46,10 @@ const
     (or any other) unit to be present in the RTTI information. }
   FileRttiTypes: array[TFileKey] of String = (
     '',                            { ftNone }
-//  'UnitName.TypeName',           { ft<...> }
+    'PresortTypesX.TpSortType',    { ftPCD }
+    'PresortTypesX.TPackRecord',   { ftPCK }
+    'System.Integer',              { ftPPF }
+    'PresortTypesX.TSackRecord'    { ftSCK }
   );
 
 implementation
