@@ -1,4 +1,5 @@
 __history/*
+*/__history/*
 *.local
 *.exe
 *.identcache
