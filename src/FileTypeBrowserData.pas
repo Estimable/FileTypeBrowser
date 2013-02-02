@@ -7,7 +7,7 @@ uses
   FileTypeBrowserTypes;
 
 type
-  TFileKeyBrowserData = class
+  TFileTypeBrowserData = class
   protected
     fBaseFileName: String;
     fCaptions: TStringList;
@@ -36,7 +36,7 @@ implementation
 uses
   TypInfo;
 
-constructor TFileKeyBrowserData.Create(aBaseFileName: String; aFileType: TFileKey);
+constructor TFileTypeBrowserData.Create(aBaseFileName: String; aFileType: TFileKey);
 begin
   inherited Create;
 
@@ -54,7 +54,7 @@ begin
   InitializeCaptions;
 end;
 
-destructor TFileKeyBrowserData.Destroy;
+destructor TFileTypeBrowserData.Destroy;
 begin
   fCaptions.Free;
   fFile.Free;
@@ -62,7 +62,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TFileKeyBrowserData.InitializeCaptions;
+procedure TFileTypeBrowserData.InitializeCaptions;
 { Populates the fCaptions StringList. If the TypeKind is not recognized, the
   StringList will be blank. Otherwise:
   - The first Caption will always be 'Index'.
@@ -125,7 +125,7 @@ begin
   end;
 end;
 
-function TFileKeyBrowserData.ValueToString(const Value: TValue): String;
+function TFileTypeBrowserData.ValueToString(const Value: TValue): String;
 { Converts a TValue to a String. }
 begin
   case Value.Kind of
@@ -158,7 +158,7 @@ begin
   end;
 end;
 
-function TFileKeyBrowserData.GetNextValues: TStringList;
+function TFileTypeBrowserData.GetNextValues: TStringList;
 { Returns a StringList containing the next set of Values (or the first if the
   file is not yet open).
   If EOF is reached, nil is returned. Otherwise:

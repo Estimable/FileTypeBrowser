@@ -56,42 +56,41 @@ begin
     OpenDialog.Filter:= SFileTitle + '|*.' + SFileExtension;
     OpenDialog.FilterIndex:= 1;
     if OpenDialog.Execute then
-      fBaseFileName:= OpenDialog.FileName
-    else
-      fBaseFileName:= '';
+    begin
+      fBaseFileName:= OpenDialog.FileName;
+      { Find the position of the Delimiter in the File Name specified by the user. }
+      i:= Length(fBaseFileName);
+      while (fBaseFileName[i] <> SFileDelimiter) and (i >= 0) do
+        Dec(i);
+
+      { If the delimiter is present, set the Base File Name and the Edit Box contents
+        and refresh the List View. }
+      if i >= 0 then
+      begin
+        fBaseFileName:= Copy(fBaseFileName, 1, i - 1);
+        EditFileName.Text:= fBaseFileName + SFileDelimiter + '*.' + SFileExtension;
+        RefreshFileTypes;
+      end
+      else
+        fBaseFileName:= '';
+    end;
   finally
     OpenDialog.Free;
   end;
 
-  if fBaseFileName <> '' then
-  begin
-    { Find the position of the Delimiter in the File Name specified by the user. }
-    i:= Length(fBaseFileName);
-    while (fBaseFileName[i] <> SFileDelimiter) and (i >= 0) do
-      Dec(i);
-
-    { If the delimiter is present, set the Base File Name and the Edit Box contents
-      and refresh the List View. }
-    if i >= 0 then
-    begin
-      fBaseFileName:= Copy(fBaseFileName, 1, i - 1);
-      EditFileName.Text:= fBaseFileName + SFileDelimiter + '*.' + SFileExtension;
-      RefreshFileTypes;
-    end
-    else
-      fBaseFileName:= '';
-  end;
   RefreshUI;
 end;
 
 procedure TFileTypeBrowserForm.ButtonRefreshClick(Sender: TObject);
 begin
   RefreshFileTypes;
+  RefreshUI;
 end;
 
 procedure TFileTypeBrowserForm.ComboBoxFileTypesChange(Sender: TObject);
 begin
   RefreshListView;
+  RefreshUI;
 end;
 
 constructor TFileTypeBrowserForm.Create(AOwner: TComponent);
@@ -152,71 +151,83 @@ end;
 
 procedure TFileTypeBrowserForm.RefreshListView;
 var
-  Data: TFileKeyBrowserData;
+  Data: TFileTypeBrowserData;
   Column: TListColumn;
   Index: Integer;
   ListItem: TListItem;
   Values: TStringList;
   OldCursor: TCursor;
 begin
-  OldCursor:= Cursor;
-  Cursor:= crHourglass;
   try
-    if ComboBoxFileTypes.ItemIndex >= 0 then
-    begin
-      Data:= TFileKeyBrowserData.Create(fBaseFileName, TFileKey(ComboBoxFileTypes.Items.Objects[ComboBoxFileTypes.ItemIndex]));
+    OldCursor:= Cursor;
+    Cursor:= crHourglass;
+    try
+      ListViewData.Columns.BeginUpdate;
+      ListViewData.Items.BeginUpdate;
       try
-        ListViewData.Columns.BeginUpdate;
-        ListViewData.Items.BeginUpdate;
-        try
-          ListViewData.Items.Clear;
-          ListViewData.Columns.Clear;
-          { If the Data is not valid (e.g. TFileKey was ftNone or RTTI information
-            could not be found), just leave the List View blank }
-          if Data.Valid then
-          begin
-            { Columns }
-            for Index:= 0 to Data.Captions.Count - 1 do
+        ListViewData.Items.Clear;
+        ListViewData.Columns.Clear;
+        if ComboBoxFileTypes.ItemIndex >= 0 then
+        begin
+          Data:= TFileTypeBrowserData.Create(fBaseFileName, TFileKey(ComboBoxFileTypes.Items.Objects[ComboBoxFileTypes.ItemIndex]));
+          try
+            { If the Data is not valid (e.g. TFileKey was ftNone or RTTI information
+              could not be found), just leave the List View blank }
+            if Data.Valid then
             begin
-              Column:= ListViewData.Columns.Add;
-              Column.Caption:= Data.Captions[Index];
-              { Adjusts width to header, although if the contents are larger it
-                appears Windows uses that instead }
-              Column.Width:= -2;
-            end;
-            { Items }
-            Values:= Data.GetNextValues;
-            while Assigned(Values) do
-            begin
-              ListItem:= ListViewData.Items.Add;
-              for Index:= 0 to Values.Count - 1 do
+              { Columns }
+              for Index:= 0 to Data.Captions.Count - 1 do
               begin
-                case Index of
-                  0:
-                    ListItem.Caption:= Values[Index];
-                  else
-                    ListItem.SubItems.Add(Values[Index]);
-                end;
+                Column:= ListViewData.Columns.Add;
+                Column.Caption:= Data.Captions[Index];
+                { Adjusts width to header, although if the contents are larger it
+                  appears Windows uses that instead }
+                Column.Width:= -2;
               end;
+              { Items }
               Values:= Data.GetNextValues;
+              while Assigned(Values) do
+              begin
+                ListItem:= ListViewData.Items.Add;
+                for Index:= 0 to Values.Count - 1 do
+                begin
+                  case Index of
+                    0:
+                      ListItem.Caption:= Values[Index];
+                    else
+                      ListItem.SubItems.Add(Values[Index]);
+                  end;
+                end;
+                Values:= Data.GetNextValues;
+              end;
             end;
+          finally
+            Data.Free;
           end;
-        finally
-          ListViewData.Columns.EndUpdate;
-          ListViewData.Items.EndUpdate;
         end;
       finally
-        Data.Free;
+        ListViewData.Columns.EndUpdate;
+        ListViewData.Items.EndUpdate;
       end;
+    finally
+      Cursor:= OldCursor;
     end;
-  finally
-    Cursor:= OldCursor;
+  except
+    { If we cannot open the file, we need to refresh the Combo Box list again
+      as the files available have changed. }
+    on E: EFOpenError do
+    begin
+      MessageDlg(E.Message + sLineBreak + sLineBreak + 'The File Types available will now refresh.',
+                 mtError, [mbOk], 0);
+      RefreshFileTypes;
+      RefreshUI;
+    end;
   end;
 end;
 
 procedure TFileTypeBrowserForm.RefreshUI;
 begin
-  ComboBoxFileTypes.Enabled:= fBaseFileName <> '';
+  ComboBoxFileTypes.Enabled:= (fBaseFileName <> '') and (ComboBoxFileTypes.Items.Count > 0);
   ButtonRefresh.Enabled:= fBaseFileName <> '';
 end;
 
