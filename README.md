@@ -8,7 +8,7 @@ Overview
 
 The utility will generate List Views showing the contents of files with simple file structures, with the structures being pulled directly from the code at runtime. Specifically, each file must consist of only one type (`File of <type>`). These types may be any ordinal or enumerated type, or records containing any combination of ordinal and enumerated types.
 
-This is of particular value for legacy Delphi applications which may store large amounts of data in many working files.
+This has value for Delphi projects utilizing a very large number of working files (generally comprised of records) defined only within the source code and not intended to be human-readable.
 
 Initially, this application is intended to work only with multiple files of the form:
 
@@ -17,8 +17,8 @@ Initially, this application is intended to work only with multiple files of the 
 So, for instance, the following group of files would match the above form:
 
     FILE-ABC.DAT
-		FILE-DEF.DAT
-		FILE-GHI.DAT
+    FILE-DEF.DAT
+    FILE-GHI.DAT
 
 Setup
 =====
