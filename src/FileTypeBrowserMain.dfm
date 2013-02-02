@@ -66,6 +66,7 @@ object FileTypeBrowserForm: TFileTypeBrowserForm
     Height = 21
     Caption = 'Refresh'
     TabOrder = 3
+    OnClick = ButtonRefreshClick
   end
   object ComboBoxFileTypes: TComboBox
     Left = 432

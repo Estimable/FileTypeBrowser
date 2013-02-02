@@ -18,6 +18,7 @@ type
     LabelFileType: TLabel;
     procedure ButtonFileNameBrowseClick(Sender: TObject);
     procedure ComboBoxFileTypesChange(Sender: TObject);
+    procedure ButtonRefreshClick(Sender: TObject);
   private
     fBaseFileName: String;
     procedure RefreshFileTypes;
@@ -81,6 +82,11 @@ begin
       fBaseFileName:= '';
   end;
   RefreshUI;
+end;
+
+procedure TFileTypeBrowserForm.ButtonRefreshClick(Sender: TObject);
+begin
+  RefreshFileTypes;
 end;
 
 procedure TFileTypeBrowserForm.ComboBoxFileTypesChange(Sender: TObject);
