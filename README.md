@@ -17,8 +17,8 @@ Initially, this application is intended to work only with multiple files of the 
 So, for instance, the following group of files would match the above form:
 
     FILE-ABC.DAT
-		FILE-DEF.DAT
-		FILE-GHI.DAT
+    FILE-DEF.DAT
+    FILE-GHI.DAT
 
 Setup
 =====
